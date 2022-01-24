@@ -4,9 +4,9 @@ all::
 all:: pre build
 .PHONY: all test
 
-MAINTAINER:="Evan Sarmiento <esarmien@snkattck.co>"
-MAINTAINER_URL:="https://github.com/snkattck/slurm-docker-cluster"
-IMAGE_NAME:=snkattck/slurm-docker-cluster
+MAINTAINER:="Harvard IQSS <help@iq.harvard.edu>"
+MAINTAINER_URL:="https://github.com/hmdc/slurm-docker-cluster"
+IMAGE_NAME:=hmdc/slurm-docker-cluster
 GIT_SHA:=$(shell git rev-parse HEAD)
 OS:=$(shell uname | tr '[:upper:]' '[:lower:]')
 GIT_BRANCH:=$(shell git rev-parse --abbrev-ref HEAD)
