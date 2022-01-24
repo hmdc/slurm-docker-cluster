@@ -1,12 +1,25 @@
 FROM centos:7
 
-LABEL org.opencontainers.image.source="https://github.com/giovtorres/slurm-docker-cluster" \
-      org.opencontainers.image.title="slurm-docker-cluster" \
-      org.opencontainers.image.description="Slurm Docker cluster on CentOS 7" \
-      org.label-schema.docker.cmd="docker-compose up -d" \
-      maintainer="Giovanni Torres"
+ARG R_VERSION
+ARG APT_VERSION
+ARG GIT_SHA
+ARG GIT_DATE
+ARG BUILD_DATE
+ARG MAINTAINER
+ARG MAINTAINER_URL
+ARG SLURM_TAG=slurm-20-02-1-1
 
-ARG SLURM_TAG=slurm-19-05-1-2
+LABEL "slurm.tag"="$SLURM_TAG" \
+      "git.sha"="$GIT_SHA" \
+      "git.date"="$GIT_DATE" \
+      "build.date"="$BUILD_DATE" \
+      "maintainer"="$MAINTAINER" \
+      "maintainer.url"="$MAINTAINER_URL" \
+      "org.opencontainers.image.source"="https://github.com/snkattck/slurm-docker-cluster" \
+      "org.opencontainers.image.title"="slurm-docker-cluster" \
+      "org.opencontainers.image.description"="Slurm Docker cluster on CentOS 7" \
+      "org.label-schema.docker.cmd"="docker-compose up -d"
+
 ARG GOSU_VERSION=1.11
 
 RUN set -ex \
@@ -35,7 +48,9 @@ RUN set -ex \
        bash-completion \
        vim-enhanced \
     && yum clean all \
-    && rm -rf /var/cache/yum
+    && rm -rf /var/cache/yum \
+    && ln -s /usr/bin/python3.4 /usr/bin/python3 \
+    && ln -s /usr/bin/pip3.4 /usr/bin/pip3
 
 RUN pip install Cython nose && pip3.4 install Cython nose
 
