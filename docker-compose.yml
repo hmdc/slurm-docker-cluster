@@ -4,7 +4,7 @@ services:
   mysql:
     image: mariadb:10.4.18
     hostname: mysql
-    container_name: mysql
+    container_name: slurm_mysql
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: slurm_acct_db
@@ -16,7 +16,7 @@ services:
   slurmdbd:
     image: hmdc/slurm-docker-cluster:${SLURM_TAG}
     command: ["slurmdbd"]
-    container_name: slurmdbd
+    container_name: slurm_slurmdbd
     hostname: slurmdbd
     volumes:
       - etc_munge:/etc/munge
@@ -30,7 +30,7 @@ services:
   slurmctld:
     image: hmdc/slurm-docker-cluster:${SLURM_TAG}
     command: ["slurmctld"]
-    container_name: slurmctld
+    container_name: slurm_slurmctld
     hostname: slurmctld
     volumes:
       - etc_munge:/etc/munge
@@ -44,7 +44,7 @@ services:
     image: hmdc/slurm-docker-cluster:${SLURM_TAG}
     command: ["slurmd"]
     hostname: c1
-    container_name: c1
+    container_name: slurm_c1
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
@@ -59,7 +59,7 @@ services:
     image: hmdc/slurm-docker-cluster:${SLURM_TAG}
     command: ["slurmd"]
     hostname: c2
-    container_name: c2
+    container_name: slurm_c2
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
