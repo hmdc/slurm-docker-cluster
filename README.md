@@ -25,11 +25,11 @@ Then run ```remake test```
 
 The compose file will run the following containers:
 
-* mysql
-* slurmdbd
-* slurmctld
-* c1 (slurmd)
-* c2 (slurmd)
+* slurm_mysql
+* slurm_slurmdbd
+* slurm_slurmctld
+* slurm_c1 (slurmd)
+* slurm_c2 (slurmd)
 
 The compose file will create the following named volumes:
 
@@ -68,13 +68,13 @@ env SLURM_TAG=slurm-20-02-1-1 docker-compose up -d
 Use `docker exec` to run a bash shell on the controller container:
 
 ```console
-docker exec -it slurmctld bash
+docker exec -it slurm_slurmctld bash
 ```
 
 From the shell, execute slurm commands, for example:
 
 ```console
-[root@slurmctld /]# sinfo
+[root@slurm_slurmctld /]# sinfo
 PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
 normal*      up 5-00:00:00      2   idle c[1-2]
 ```
@@ -83,13 +83,13 @@ normal*      up 5-00:00:00      2   idle c[1-2]
 
 The `slurm_jobdir` named volume is mounted on each Slurm container as `/data`.
 Therefore, in order to see job output files while on the controller, change to
-the `/data` directory when on the **slurmctld** container and then submit a job:
+the `/data` directory when on the **slurm_slurmctld** container and then submit a job:
 
 ```console
-[root@slurmctld /]# cd /data/
-[root@slurmctld data]# sbatch --wrap="uptime"
+[root@slurm_slurmctld /]# cd /data/
+[root@slurm_slurmctld data]# sbatch --wrap="uptime"
 Submitted batch job 2
-[root@slurmctld data]# ls
+[root@slurm_slurmctld data]# ls
 slurm-2.out
 ```
 
