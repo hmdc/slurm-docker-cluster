@@ -41,26 +41,20 @@ The compose file will create the following named volumes:
 
 ## Building the Docker Image
 
-Build the image locally:
+Build the image locally. The version of Slurm is selected using Docker build args and the Slurm Git
+tag. Slurm tags available on https://github.com/SchedMD/slurm/tags.
 
 ```console
-make build
-```
-
-Build a different version of Slurm using Docker build args and the Slurm Git
-tag. Slurm tags available on https://github.com/SchedMD/slurm/releases.
-
-```console
-make build -s SLURM_TAG="slurm-19-05-2-1"
+make build -s SLURM_TAG="slurm-20-11-4-1"
 ```
 
 ## Starting the Cluster
 
 Run `docker-compose` to instantiate the cluster. ```SLURM_TAG``` is required.
-Latest supported SLURM_TAG is ```slurm-20-02-1-1```.
+Latest supported SLURM_TAG is ```slurm-21-08-6-1```.
 
 ```console
-env SLURM_TAG=slurm-20-02-1-1 docker-compose up -d
+env SLURM_TAG=slurm-21-08-6-1 docker-compose up -d
 ```
 
 ## Accessing the Cluster
