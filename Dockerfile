@@ -1,4 +1,4 @@
-FROM centos:7
+FROM rockylinux/rockylinux:8
 
 ARG GIT_SHA
 ARG GIT_DATE
@@ -15,14 +15,16 @@ LABEL "slurm.tag"="$SLURM_TAG" \
       "maintainer.url"="$MAINTAINER_URL" \
       "org.opencontainers.image.source"="https://github.com/hmdc/slurm-docker-cluster" \
       "org.opencontainers.image.title"="slurm-docker-cluster" \
-      "org.opencontainers.image.description"="Slurm Docker cluster on CentOS 7" \
+      "org.opencontainers.image.description"="Slurm Docker cluster on Rocky8" \
       "org.label-schema.docker.cmd"="docker-compose up -d"
 
 ARG GOSU_VERSION=1.11
 RUN set -ex \
-    && yum makecache fast \
+    && yum makecache \
+    && yum install -y epel-release \
     && yum -y update \
-    && yum -y install epel-release \
+    && yum -y install dnf-plugins-core \
+    && yum config-manager --set-enabled powertools \
     && yum -y install \
        wget \
        bzip2 \
@@ -34,23 +36,23 @@ RUN set -ex \
        make \
        munge \
        munge-devel \
-       python-devel \
-       python-pip \
-       python34 \
-       python34-devel \
-       python34-pip \
+       python3-devel \
+       python3-pip \
+       python3 \
        mariadb-server \
        mariadb-devel \
        psmisc \
        bash-completion \
        vim-enhanced \
-       singularity \
+       singularity-ce \
+       http-parser-devel \
+       json-c-devel \
     && yum clean all \
-    && rm -rf /var/cache/yum \
-    && ln -s /usr/bin/python3.4 /usr/bin/python3 \
-    && ln -s /usr/bin/pip3.4 /usr/bin/pip3
+    && rm -rf /var/cache/yum
 
-RUN pip install Cython nose && pip3.4 install Cython nose
+RUN alternatives --set python /usr/bin/python3
+
+RUN pip3 install Cython nose
 
 RUN set -ex \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
@@ -63,9 +65,8 @@ RUN set -ex \
     && gosu nobody true
 
 RUN set -x \
-    && git clone https://github.com/SchedMD/slurm.git \
+    && git clone -b ${SLURM_TAG} --single-branch --depth=1 https://github.com/SchedMD/slurm.git \
     && pushd slurm \
-    && git checkout tags/$SLURM_TAG \
     && ./configure --enable-debug --prefix=/usr --sysconfdir=/etc/slurm \
         --with-mysql_config=/usr/bin  --libdir=/usr/lib64 \
     && make install \
@@ -75,8 +76,8 @@ RUN set -x \
     && install -D -m644 contribs/slurm_completion_help/slurm_completion.sh /etc/profile.d/slurm_completion.sh \
     && popd \
     && rm -rf slurm \
-    && groupadd -r --gid=995 slurm \
-    && useradd -r -g slurm --uid=995 slurm \
+    && groupadd -r --gid=990 slurm \
+    && useradd -r -g slurm --uid=990 slurm \
     && mkdir /etc/sysconfig/slurm \
         /var/spool/slurmd \
         /var/run/slurmd \
@@ -97,8 +98,12 @@ RUN set -x \
     && /sbin/create-munge-key
 
 COPY slurm.conf /etc/slurm/slurm.conf
-COPY --chown=slurm:slurm slurmdbd.conf /etc/slurm/slurmdbd.conf
-RUN chmod 0600 /etc/slurm/slurmdbd.conf
+COPY slurmdbd.conf /etc/slurm/slurmdbd.conf
+RUN set -x \
+    && chown slurm:slurm /etc/slurm/slurmdbd.conf \
+    && chmod 600 /etc/slurm/slurmdbd.conf
+
+
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 

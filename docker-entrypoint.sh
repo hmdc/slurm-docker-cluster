@@ -43,6 +43,7 @@ if [ "$1" = "slurmd" ]
 then
     echo "---> Starting the MUNGE Authentication service (munged) ..."
     gosu munge /usr/sbin/munged
+    sinfo --version
 
     echo "---> Waiting for slurmctld to become active before starting slurmd..."
 
